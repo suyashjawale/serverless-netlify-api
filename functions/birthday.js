@@ -34,7 +34,7 @@ exports.handler = async (event, context) => {
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify(snapshot.data()['records'].map(item => ({ "uid": item.uid, "person_name": item.name })) || []),
+            body: JSON.stringify(snapshot.data()['records'].map(item => ({ "uid": item.uid, "name": item.name })) || []),
         };
 
     } catch (error) {
