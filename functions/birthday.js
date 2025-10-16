@@ -20,7 +20,7 @@ exports.handler = async (event, context) => {
         const snapshot = await firestore.collection('birthdays').doc(`${today.getDate()}-${today.getMonth() + 1}`).get();
 
         // Check if the collection has any documents
-        if (snapshot.empty) {
+        if (snapshot.empty || snapshot.data() == undefined) {
             return {
                 statusCode: 404,
                 headers,
@@ -30,7 +30,6 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // Map over each document and collect its data
         return {
             statusCode: 200,
             headers,
