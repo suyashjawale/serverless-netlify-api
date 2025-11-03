@@ -56,12 +56,12 @@ exports.handler = async (event) => {
         }
 
         // Fetch document
-        const docRef = await firestore.collection('mobile_number').doc(uid).get();
+        const docRef = await firestore.collection('mobile_numbers').doc(uid).get();
 
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify(docRef.data() || {"numbers":[]}),
+            body: JSON.stringify(docRef.data()['records'] || {"message":'None',"phone_number":[]}),
         };
     } catch (error) {
         return {
