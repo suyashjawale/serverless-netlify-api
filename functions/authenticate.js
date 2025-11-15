@@ -39,14 +39,14 @@ exports.handler = async (event) => {
             return {
                 statusCode: 401,
                 headers,
-                body: "false",
+                body: JSON.stringify({ error: 'Invalid Password' }),
             };
         }
 
         return {
             statusCode: 200,
             headers,
-            body: "true",
+            body: JSON.stringify({ access_token: process.env.DROPBOX_ACCESS_TOKEN, upload_url: process.env.DROPBOX_UPLOAD_URL }),
         };
     } catch (error) {
         return {
