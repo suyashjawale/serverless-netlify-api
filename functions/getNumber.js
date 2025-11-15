@@ -47,7 +47,7 @@ exports.handler = async (event) => {
         }
 
         // Check password
-        if (password !== SECRET_PASSWORD) {
+        if (password.toString() !== SECRET_PASSWORD) {
             return {
                 statusCode: 401,
                 headers,
