@@ -90,3 +90,12 @@ to the site.
 demo is the file name you created. 
 
 Now it works. Please refer code files for further more usage.
+
+
+---------------------------
+
+if you take pull 
+
+just write command "netlify link"
+
+this way you can access remote environment varibles

@@ -46,7 +46,7 @@ exports.handler = async (event) => {
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify({ access_token: process.env.DROPBOX_ACCESS_TOKEN, upload_url: process.env.DROPBOX_UPLOAD_URL }),
+            body: JSON.stringify({ access_token: process.env.DROPBOX_ACCESS_TOKEN}),
         };
     } catch (error) {
         return {
