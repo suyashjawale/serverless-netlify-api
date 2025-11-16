@@ -55,12 +55,26 @@ exports.handler = async (event) => {
             };
         }
 
-        const dropbox_access_token = await firestore.collection('credentials').doc('access_token').get();
+        const refresh_token = await firestore.collection('credentials').doc('refresh_token').get();
+        const app_key = await firestore.collection('credentials').doc('app_key').get();
+        const app_secret = await firestore.collection('credentials').doc('app_secret').get();
 
+        const tokenResponse = await fetch("https://api.dropboxapi.com/oauth2/token", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+                grant_type: "refresh_token",
+                refresh_token: refresh_token.data().refresh_token,
+                client_id: app_key.data().app_key,
+                client_secret: app_secret.data().app_secret,
+            })
+        });
+
+        const tokenJSON = await tokenResponse.json();
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify(dropbox_access_token.data()),
+            body: JSON.stringify(tokenJSON),
         };
     } catch (error) {
         return {
