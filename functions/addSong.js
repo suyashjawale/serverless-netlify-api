@@ -35,7 +35,7 @@ exports.handler = async (event) => {
 
     try {
         const body = JSON.parse(event.body || '{}');
-        const { songName, artistName, songLink, thumbnailLink, youtube_link, customName, password } = body;
+        const { songName, artistName, songLink, thumbnailLink, youtube_link, customName, password, rank, queueNumber } = body;
 
         // Validate input
         if (!password || password.length > 20) {
@@ -63,7 +63,9 @@ exports.handler = async (event) => {
                 fileName: songLink,
                 playingSong: false,
                 thumbnail: thumbnailLink,
-                yt_link: youtube_link
+                yt_link: youtube_link,
+                rank: rank,
+                queueNumber: queueNumber
             }
         );
 
