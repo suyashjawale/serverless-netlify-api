@@ -35,7 +35,7 @@ exports.handler = async (event) => {
 
     try {
         const body = JSON.parse(event.body || '{}');
-        const { songName, artistName, songLink, thumbnailLink, youtube_link, customName, password, rank, queueNumber } = body;
+        const { customName, password, rank } = body;
 
         // Validate input
         if (!password || password.length > 20) {
@@ -55,20 +55,7 @@ exports.handler = async (event) => {
             };
         }
 
-        // Fetch document
-        await firestore.collection('songs').doc(customName).set(
-            {
-                songName: songName,
-                artist: artistName,
-                fileName: songLink,
-                playingSong: false,
-                thumbnail: thumbnailLink,
-                yt_link: youtube_link,
-                rank: rank,
-                queueNumber: queueNumber,
-                customName: customName
-            }
-        );
+        await firestore.collection('songs').doc(customName).update({rank: rank});
 
         return {
             statusCode: 200,
