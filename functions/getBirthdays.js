@@ -35,10 +35,11 @@ exports.handler = async (event) => {
 
     try {
         const body = JSON.parse(event.body || '{}');
-        const { uid, password } = body;
+        const { password } = body;
 
         // Validate input
-        if (!uid || !password || uid.length>10 || password.length>20) {
+
+        if (password.length > 20) {
             return {
                 statusCode: 400,
                 headers,
@@ -46,8 +47,7 @@ exports.handler = async (event) => {
             };
         }
 
-        // Check password
-        if (password.toString() !== SECRET_PASSWORD) {
+        if (password.trim().length != 0 && password.toString() !== SECRET_PASSWORD) {
             return {
                 statusCode: 401,
                 headers,
@@ -55,14 +55,29 @@ exports.handler = async (event) => {
             };
         }
 
-        // Fetch document
-        const docRef = await firestore.collection('mobile_numbers').doc(uid).get();
+        const today = new Date();
+        const snapshot = await firestore.collection('birthdays').doc(`${today.getDate()}-${today.getMonth() + 1}`).get();
 
-        return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify(docRef.data()['records'] || {"message":'None',"phone_number":[]}),
-        };
+        if (password.trim().length == 0) {
+            return {
+                statusCode: 200,
+                headers,
+                body: JSON.stringify(snapshot.data()['records'].map((data => {
+                    return {
+                        "message": data.message
+                    }
+                }))),
+            };
+
+        }
+        else {
+            return {
+                statusCode: 200,
+                headers,
+                body: JSON.stringify(snapshot.data()['records'] || []),
+            };
+        }
+
     } catch (error) {
         return {
             statusCode: 500,
