@@ -66,7 +66,7 @@ exports.handler = async (event) => {
                     return {
                         "message": data.message
                     }
-                }))),
+                })) || []),
             };
 
         }

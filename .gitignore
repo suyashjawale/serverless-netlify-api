@@ -2,3 +2,4 @@ node_modules
 admin.json
 # Local Netlify folder
 .netlify
+deno.lock
