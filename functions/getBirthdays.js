@@ -58,6 +58,14 @@ exports.handler = async (event) => {
         const today = new Date();
         const snapshot = await firestore.collection('birthdays').doc(`${today.getDate()}-${today.getMonth() + 1}`).get();
 
+        if (snapshot.empty || snapshot.data() == undefined) {
+            return {
+                statusCode: 200,
+                headers,
+                body: JSON.stringify([]),
+            };
+        }
+
         if (password.trim().length == 0) {
             return {
                 statusCode: 200,
@@ -68,7 +76,6 @@ exports.handler = async (event) => {
                     }
                 })) || []),
             };
-
         }
         else {
             return {
