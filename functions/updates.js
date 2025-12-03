@@ -1,4 +1,6 @@
 const admin = require('firebase-admin');
+const FieldValue = admin.firestore.FieldValue;
+
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -25,25 +27,31 @@ exports.handler = async (event, context) => {
             event.headers["x-real-ip"] ||
             firestore.collection('visitors').doc().id;
 
-        await firestore.collection('visitors').doc(clientIp).set({ 'IP': clientIp, 'User-Agent': event.headers["user-agent"] });
-        const snapshot = await firestore.collection('songs').get();
+        await firestore.collection('visitors').doc(clientIp).set({ 'IP': clientIp, visits: FieldValue.arrayUnion({ 'User-Agent': event.headers["user-agent"], 'visit-time': new Date().toISOString() }) }, { merge: true });
 
-        // Check if the collection has any documents
-        if (snapshot.empty) {
-            return {
-                statusCode: 404,
-                headers,
-                body: JSON.stringify({
-                    error: 'No data found'
-                }),
-            };
-        }
+        const message = {
+            chat_id: process.env.CHAT_ID,
+            text: `Visitor - ${clientIp}`,
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        { text: "Get Details", callback_data: clientIp }
+                    ]
+                ]
+            }
+        };
 
-        // Map over each document and collect its data
+        await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(message)
+        });
+
+
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify(snapshot.docs.map(d => d.data())), // Ensure this is JSON formatted
+            body: "Ok",
         };
 
     } catch (error) {

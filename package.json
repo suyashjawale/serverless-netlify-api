@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "firebase-admin": "^12.7.0"
+    "firebase-admin": "^12.7.0",
+    "ua-parser-js": "^2.0.6"
   }
 }
