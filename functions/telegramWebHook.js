@@ -38,7 +38,7 @@ export async function handler(event, context) {
 
         const res = await fetch("https://www.iplocation.net/get-ipdata", requestOptions)
         const xml = await res.json();
-        const parser = new UAParser(uaString);
+        const parser = new UAParser("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36");
 
         let message = "";
         message += `<b>IP<b/>\n${data}\n\n__________________\n\n<b>Browser<b/>\n${parser.getBrowser().name}\n\n<b>CPU<b/>\n${parser.getCPU().name}\n\n<b>Device<b/>\n${parser.getDevice().name}\n\n<b>OS<b/>\n${parser.getOS().name}\n\n__________________\n\n`;
