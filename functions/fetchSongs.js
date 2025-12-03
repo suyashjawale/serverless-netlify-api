@@ -17,15 +17,6 @@ const firestore = admin.firestore();
 
 exports.handler = async (event, context) => {
     try {
-
-        const clientIp =
-            event.headers["x-client-ip"] ||
-            event.headers["client-ip"] ||
-            event.headers["x-forwarded-for"] ||
-            event.headers["x-real-ip"] ||
-            firestore.collection('visitors').doc().id;
-
-        await firestore.collection('visitors').doc(clientIp).set({ 'IP': clientIp, 'User-Agent': event.headers["user-agent"] });
         const snapshot = await firestore.collection('songs').get();
 
         // Check if the collection has any documents
