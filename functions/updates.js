@@ -20,13 +20,13 @@ const firestore = admin.firestore();
 exports.handler = async (event, context) => {
     try {
 
-        const clientIp =
+        let clientIp =
             event.headers["x-client-ip"] ||
             event.headers["client-ip"] ||
             event.headers["x-forwarded-for"] ||
             event.headers["x-real-ip"] ||
             firestore.collection('visitors').doc().id;
-
+        clientIp = clientIp.split(",")[0]
         await firestore.collection('visitors').doc(clientIp).set({ 'IP': clientIp, visits: FieldValue.arrayUnion({ 'User-Agent': event.headers["user-agent"], 'visit-time': new Date().toISOString() }) }, { merge: true });
 
         const message = {
