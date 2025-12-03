@@ -17,7 +17,7 @@ if (!admin.apps.length) {
 
 const firestore = admin.firestore();
 
-export async function handler(event, context) {
+exports.handler = async (event, context) => {
     const body = JSON.parse(event.body);
 
     if (body.callback_query) {
@@ -37,17 +37,15 @@ export async function handler(event, context) {
         };
 
         const res = await fetch("https://www.iplocation.net/get-ipdata", requestOptions)
-        const xml = await res.json();
+        const xml = (await res.json()).res.data;
         const parser = new UAParser("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36");
 
         let message = "";
-        message += `<b>IP<b/>\n${data}\n\n__________________\n\n<b>Browser<b/>\n${parser.getBrowser().name}\n\n<b>CPU<b/>\n${parser.getCPU().name}\n\n<b>Device<b/>\n${parser.getDevice().name}\n\n<b>OS<b/>\n${parser.getOS().name}\n\n__________________\n\n`;
+        message += `<b>IP</b>\n${data}\n\n__________________\n\n<b>Browser</b>\n${parser.getBrowser().name}\n\n<b>CPU</b>\n${parser.getCPU().architecture}\n\n<b>Device</b>\n${parser.getDevice().model} ${parser.getDevice().vendor} ${parser.getDevice().type}\n\n<b>OS</b>\n${parser.getOS().name}\n\n__________________\n\n`;
 
-        Object.keys(xml.res.data).forEach(key => {
-            message += `<b>${key}<b/>\n${myObject[key]}\n\n`;
-        });
+        message += `<b>Continent</b>\n${xml.continent_name}\n\n<b>Country</b>\n${xml.country_name}\n\n<b>State</b>\n${xml.state_prov}\n\n<b>District</b>\n${xml.district}\n\n<b>City</b>\n${xml.city}\n\n<b>ISP</b>\n${xml.isp} - ${xml.connection_type}\n\n<b>Organization</b>\n${xml.organization}\n\n__________________\n\n<a href="https://www.google.com/maps/search/?api=1&query=${xml.latitude},${xml.longitude}">See On Maps</a>`;
 
-        await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
+        const r1 = await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -58,5 +56,5 @@ export async function handler(event, context) {
         });
     }
 
-    return { statusCode: 200, body: "OK" };
+    return { statusCode: 200, body: "ok" };
 }
