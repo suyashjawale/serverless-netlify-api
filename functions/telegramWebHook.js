@@ -24,10 +24,13 @@ exports.handler = async (event, context) => {
         const chatId = body.callback_query.message.chat.id;
         const data = body.callback_query.data;
 
+        const userAgent = await firestore.collection('visitors').doc(data).get();
+
+
         const myHeaders = new Headers();
         myHeaders.append("content-type", "application/x-www-form-urlencoded; charset=UTF-8");
 
-        const raw = "ip=116.74.191.139&source=ipgeolocation&ipv=4";
+        const raw = `ip=${data}&source=ipgeolocation&ipv=4`;
 
         const requestOptions = {
             method: "POST",
@@ -38,7 +41,7 @@ exports.handler = async (event, context) => {
 
         const res = await fetch("https://www.iplocation.net/get-ipdata", requestOptions)
         const xml = (await res.json()).res.data;
-        const parser = new UAParser("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36");
+        const parser = new UAParser(userAgent.data()['visits'].at(-1)['User-Agent']);
 
         let message = "";
         message += `<b>IP</b>\n${data}\n\n__________________\n\n<b>Browser</b>\n${parser.getBrowser().name}\n\n<b>CPU</b>\n${parser.getCPU().architecture}\n\n<b>Device</b>\n${parser.getDevice().model} ${parser.getDevice().vendor} ${parser.getDevice().type}\n\n<b>OS</b>\n${parser.getOS().name}\n\n__________________\n\n`;
