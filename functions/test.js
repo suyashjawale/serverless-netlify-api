@@ -1,19 +1,14 @@
+const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+    // Request device client hints
+    "Accept-CH": "Sec-CH-UA, Sec-CH-UA-Model, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version, Sec-CH-UA-Mobile",
+    // Must include these for Chrome 115+
+    "Permissions-Policy": "ch-ua=*; ch-ua-model=*; ch-ua-platform=*; ch-ua-platform-version=*; ch-ua-mobile=*"
+};
+
 exports.handler = async (event) => {
 
-    const myHeaders = new Headers();
-    myHeaders.append("content-type", "application/x-www-form-urlencoded; charset=UTF-8");
-
-    const raw = "ip=116.74.191.139&source=ipgeolocation&ipv=4";
-
-    const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow"
-    };
-
-    const res = await fetch("https://www.iplocation.net/get-ipdata", requestOptions)
-    const xml = await res.json();
-
-    return { statusCode: 200, body: JSON.stringify(xml) };
+    return { statusCode: 200, headers, body: JSON.stringify(event.headers) };
 }
