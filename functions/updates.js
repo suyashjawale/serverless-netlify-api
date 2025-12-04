@@ -29,7 +29,18 @@ exports.handler = async (event, context) => {
             event.headers["x-real-ip"] ||
             firestore.collection('visitors').doc().id;
         clientIp = clientIp.split(",")[0]
-        await firestore.collection('visitors').doc(clientIp).set({ 'IP': clientIp, visits: FieldValue.arrayUnion({ 'User-Agent': event.headers["user-agent"], 'visit-time': new Date().toISOString() }) }, { merge: true });
+        await firestore.collection('visitors').doc(clientIp).set({
+            'IP': clientIp,
+            'headers': {
+                'user-agent': event.headers["user-agent"],
+                'sec-ch-ua-mobile': event.headers["sec-ch-ua-mobile"],
+                'sec-ch-ua-model': event.headers["sec-ch-ua-model"],
+                'sec-ch-ua-platform': event.headers["sec-ch-ua-platform"],
+                'sec-ch-ua-platform-version': event.headers["sec-ch-ua-platform-version"]
+            }, visits: FieldValue.arrayUnion({
+                'visit-time': new Date().toISOString()
+            })
+        }, { merge: true });
 
         const message = {
             chat_id: process.env.CHAT_ID,

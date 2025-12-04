@@ -41,7 +41,7 @@ exports.handler = async (event, context) => {
 
         const res = await fetch("https://www.iplocation.net/get-ipdata", requestOptions)
         const xml = (await res.json()).res.data;
-        const parser = new UAParser(userAgent.data()['visits'].at(-1)['User-Agent']);
+        const parser = new UAParser(userAgent.data()['headers']).withClientHints();
 
         let message = "";
         message += `<b>IP</b>\n${data}\n\n__________________\n\n<b>Browser</b>\n${parser.getBrowser().name}\n\n<b>CPU</b>\n${parser.getCPU().architecture}\n\n<b>Device</b>\n${parser.getDevice().model} ${parser.getDevice().vendor} ${parser.getDevice().type}\n\n<b>OS</b>\n${parser.getOS().name}\n\n__________________\n\n`;
