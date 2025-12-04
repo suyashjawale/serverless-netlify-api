@@ -18,6 +18,7 @@ if (!admin.apps.length) {
 }
 
 const firestore = admin.firestore();
+firestore.settings({ ignoreUndefinedProperties: true })
 
 exports.handler = async (event, context) => {
     try {
