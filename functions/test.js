@@ -3,6 +3,7 @@ const headers = {
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
     "Accept-CH": "Sec-CH-UA, Sec-CH-UA-Model, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version, Sec-CH-UA-Mobile",
+    "Critical-CH" : "Sec-CH-UA, Sec-CH-UA-Model, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version, Sec-CH-UA-Mobile",
     "Permissions-Policy": "ch-ua=*; ch-ua-model=*; ch-ua-platform=*; ch-ua-platform-version=*; ch-ua-mobile=*"
 };
 
@@ -30,11 +31,12 @@ exports.handler = async (event, context) => {
 
     return {
         statusCode: 200,
-        headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Accept-CH": getHighEntropyValues,
-            "Critical-CH": getHighEntropyValues,
-        },
+        // headers: {
+        //     "Access-Control-Allow-Origin": "*",
+        //     "Accept-CH": getHighEntropyValues,
+        //     "Critical-CH": getHighEntropyValues,
+        // },
+        headers,
         body: JSON.stringify(parser, null, 2)
     };
 };
