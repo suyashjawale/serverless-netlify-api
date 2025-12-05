@@ -1,5 +1,7 @@
 const admin = require('firebase-admin');
 const FieldValue = admin.firestore.FieldValue;
+const UAParser = require("ua-parser-js");
+
 
 const headers = {
     "Access-Control-Allow-Origin": "*",
