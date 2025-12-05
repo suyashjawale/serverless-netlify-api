@@ -6,9 +6,9 @@ const headers = {
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
     "Accept-CH": "Sec-CH-UA, Sec-CH-UA-Model, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version, Sec-CH-UA-Mobile",
+    "Critical-CH" : "Sec-CH-UA, Sec-CH-UA-Model, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version, Sec-CH-UA-Mobile",
     "Permissions-Policy": "ch-ua=*; ch-ua-model=*; ch-ua-platform=*; ch-ua-platform-version=*; ch-ua-mobile=*"
 };
-
 // Initialize Firebase Admin SDK only once
 if (!admin.apps.length) {
     const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
@@ -22,7 +22,6 @@ firestore.settings({ ignoreUndefinedProperties: true })
 
 exports.handler = async (event, context) => {
     try {
-
         let clientIp =
             event.headers["x-client-ip"] ||
             event.headers["client-ip"] ||
@@ -60,7 +59,6 @@ exports.handler = async (event, context) => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(message)
         });
-
 
         return {
             statusCode: 200,
