@@ -2,7 +2,6 @@ const admin = require('firebase-admin');
 const FieldValue = admin.firestore.FieldValue;
 const UAParser = require("ua-parser-js");
 
-
 const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type",
@@ -13,25 +12,25 @@ const headers = {
 };
 
 // Initialize Firebase Admin SDK only once
-// if (!admin.apps.length) {
-//     const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-//     admin.initializeApp({
-//         credential: admin.credential.cert(serviceAccount),
-//     });
-// }
+if (!admin.apps.length) {
+    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+    });
+}
 
-// const firestore = admin.firestore();
-// firestore.settings({ ignoreUndefinedProperties: true })
+const firestore = admin.firestore();
+firestore.settings({ ignoreUndefinedProperties: true })
 
 exports.handler = async (event, context) => {
     try {
-        // let clientIp =
-        //     event.headers["x-client-ip"] ||
-        //     event.headers["client-ip"] ||
-        //     event.headers["x-forwarded-for"] ||
-        //     event.headers["x-real-ip"] ||
-        //     firestore.collection('visitors').doc().id;
-        // clientIp = clientIp.split(",")[0]
+        let clientIp =
+            event.headers["x-client-ip"] ||
+            event.headers["client-ip"] ||
+            event.headers["x-forwarded-for"] ||
+            event.headers["x-real-ip"] ||
+            firestore.collection('visitors').doc().id;
+        clientIp = clientIp.split(",")[0]
         // await firestore.collection('visitors').doc(clientIp).set({
         //     'IP': clientIp,
         //     'headers': {
@@ -62,13 +61,13 @@ exports.handler = async (event, context) => {
         //     headers: { "Content-Type": "application/json" },
         //     body: JSON.stringify(message)
         // });
-const parser = UAParser(event.headers).withClientHints();
-        console.log(event.headers)
-    return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify(parser, null, 2)
-    };
+        const parser = UAParser(event.headers).withClientHints();
+        await firestore.collection('visitors').doc(clientIp).set(event.headers);
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(parser, null, 2)
+        };
 
     } catch (error) {
         return {
