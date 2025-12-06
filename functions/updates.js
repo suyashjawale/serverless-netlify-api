@@ -1,14 +1,10 @@
 const admin = require('firebase-admin');
 const FieldValue = admin.firestore.FieldValue;
-const UAParser = require("ua-parser-js");
 
 const headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-    "Accept-CH": "Sec-CH-UA-Full-Version-List, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version, Sec-CH-UA-Arch, Sec-CH-UA-Bitness",
-    "Critical-CH": "Sec-CH-UA-Full-Version-List, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version, Sec-CH-UA-Arch, Sec-CH-UA-Bitness",
-    "Permissions-Policy": "ch-ua=*; ch-ua-model=*; ch-ua-platform=*; ch-ua-platform-version=*; ch-ua-mobile=*"
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 // Initialize Firebase Admin SDK only once
@@ -22,7 +18,20 @@ if (!admin.apps.length) {
 const firestore = admin.firestore();
 firestore.settings({ ignoreUndefinedProperties: true })
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
+    if (event.httpMethod === 'OPTIONS') {
+        return { statusCode: 200, headers };
+    }
+
+    // Only allow POST
+    if (event.httpMethod !== 'POST') {
+        return {
+            statusCode: 405,
+            headers,
+            body: JSON.stringify({ error: 'Method not allowed' }),
+        };
+    }
+
     try {
         let clientIp =
             event.headers["x-client-ip"] ||
@@ -34,7 +43,10 @@ exports.handler = async (event, context) => {
 
         await firestore.collection('visitors').doc(clientIp).set({
             'IP': clientIp,
-            'headers': event.headers, visits: FieldValue.arrayUnion({
+            'headers': {
+                'user-agent' : event.headers['user-agent'],
+                ...JSON.parse(event.body)
+            }, visits: FieldValue.arrayUnion({
                 'visit-time': new Date().toISOString()
             })
         }, { merge: true });
