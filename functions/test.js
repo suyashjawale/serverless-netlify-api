@@ -22,7 +22,7 @@ const firestore = admin.firestore();
 
 exports.handler = async (event, context) => {
     const parser = UAParser(event.headers).withClientHints();
-    await firestore.collection('visitors').doc('dummy').get(event.headers)
+    await firestore.collection('visitors').doc('dummy').set(event.headers)
     // console.log(event.headers)
     return {
         statusCode: 200,
