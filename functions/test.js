@@ -1,4 +1,5 @@
 const UAParser = require("ua-parser-js");
+const admin = require('firebase-admin');
 
 const headers = {
     "Access-Control-Allow-Origin": "*",
@@ -9,9 +10,20 @@ const headers = {
     "Permissions-Policy": "ch-ua=*; ch-ua-model=*; ch-ua-platform=*; ch-ua-platform-version=*; ch-ua-mobile=*"
 };
 
+// Initialize Firebase Admin SDK only once
+if (!admin.apps.length) {
+    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+    });
+}
+
+const firestore = admin.firestore();
+
 exports.handler = async (event, context) => {
     const parser = UAParser(event.headers).withClientHints();
-    console.log(event.headers)
+    await firestore.collection('visitors').doc('dummy').get(event.headers)
+    // console.log(event.headers)
     return {
         statusCode: 200,
         headers,
