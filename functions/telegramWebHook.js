@@ -23,9 +23,19 @@ exports.handler = async (event, context) => {
     if (body.callback_query) {
         const chatId = body.callback_query.message.chat.id;
         const data = body.callback_query.data;
+        const callbackId = body.callback_query.id;
+
+        await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/answerCallbackQuery`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                callback_query_id: callbackId,
+                text: "Fetching details…",
+                show_alert: false
+            })
+        });
 
         const userAgent = await firestore.collection('visitors').doc(data).get();
-
         const myHeaders = new Headers();
         myHeaders.append("content-type", "application/x-www-form-urlencoded; charset=UTF-8");
 
@@ -60,7 +70,7 @@ exports.handler = async (event, context) => {
         message += `<b>Location</b>\n<a href="https://www.google.com/maps/search/?api=1&query=${xml.latitude},${xml.longitude}">${xml.city}, ${xml.district}, ${xml.state_prov}, ${xml.country_name}, ${xml.continent_name}</a>`;
         message += `\n\n<b>ISP</b>\n${xml.connection_type} - ${xml.isp}\n${xml.organization}`;
 
-        const r1 = await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
+        await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -72,5 +82,5 @@ exports.handler = async (event, context) => {
         });
     }
 
-    return { statusCode: 200, body: JSON.stringify({ "ok": parser }) };
+    return { statusCode: 200, body: JSON.stringify({ "ok": "ok" }) };
 }
