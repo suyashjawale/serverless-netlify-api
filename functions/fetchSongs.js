@@ -23,11 +23,9 @@ exports.handler = async (event, context) => {
         // Check if the collection has any documents
         if (snapshot.empty) {
             return {
-                statusCode: 404,
+                statusCode: 200,
                 headers,
-                body: JSON.stringify({
-                    error: 'No data found'
-                }),
+                body: JSON.stringify([]),
             };
         }
 
