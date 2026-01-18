@@ -16,6 +16,18 @@ const firestore = admin.firestore();
 
 exports.handler = async (event, context) => {
     try {
+        const name = event.queryStringParameters.name || 'all';
+
+        if(name!='all'){
+
+            let single = await firestore.collection('collection').doc(name).get();
+            return {
+                statusCode: 200,
+                headers,
+                body: JSON.stringify({'result': single.data() }),
+            };
+        }
+
         const snapshot = await firestore.collection('collection').get();
 
         // Check if the collection has any documents
