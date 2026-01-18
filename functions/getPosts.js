@@ -50,9 +50,9 @@ exports.handler = async (event, context) => {
         // Check if the collection has any documents
         if (snapshot.empty) {
             return {
-                statusCode: 200,
+                statusCode: 500,
                 headers,
-                body: JSON.stringify({ status: 'No Data', posts: [] }),
+                body: JSON.stringify({ status: 'failed', posts: [] }),
             };
         }
 
@@ -60,14 +60,14 @@ exports.handler = async (event, context) => {
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify({ status: 'Access Restricted', posts: snapshot.docs.map(d => d.data()) })
+            body: JSON.stringify({ status: 'Loaded', posts: snapshot.docs.map(d => d.data()) })
         };
 
     } catch (error) {
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ status: 'No Data', posts: [] }),
+            body: JSON.stringify({ status: 'failed', posts: [] }),
 
         };
     }
