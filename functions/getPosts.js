@@ -14,8 +14,37 @@ if (!admin.apps.length) {
 
 const firestore = admin.firestore();
 
+const MY_NUMBER = process.env.MY_NUMBER;
+
 exports.handler = async (event, context) => {
+
+    // Handle preflight request
+    if (event.httpMethod === 'OPTIONS') {
+        return { statusCode: 200, headers };
+    }
+
+    // Only allow POST
+    if (event.httpMethod !== 'POST') {
+        return {
+            statusCode: 405,
+            headers,
+            body: JSON.stringify({ error: 'Method not allowed' }),
+        };
+    }
+
     try {
+        const body = JSON.parse(event.body || '{}');
+        const { number } = body;
+
+        // Check password
+        if (number.toString() !== MY_NUMBER) {
+            return {
+                statusCode: 401,
+                headers,
+                body: JSON.stringify({ status: 'Access Restricted', posts: [] }),
+            };
+        }
+
         const snapshot = await firestore.collection('posts').get();
 
         // Check if the collection has any documents
@@ -23,7 +52,7 @@ exports.handler = async (event, context) => {
             return {
                 statusCode: 200,
                 headers,
-                body: JSON.stringify([]),
+                body: JSON.stringify({ status: 'No Data', posts: [] }),
             };
         }
 
@@ -31,14 +60,15 @@ exports.handler = async (event, context) => {
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify(snapshot.docs.map(d => d.data())), // Ensure this is JSON formatted
+            body: JSON.stringify({ status: 'Access Restricted', posts: snapshot.docs.map(d => d.data()) })
         };
 
     } catch (error) {
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ error: error.message }),
+            body: JSON.stringify({ status: 'No Data', posts: [] }),
+
         };
     }
 };
