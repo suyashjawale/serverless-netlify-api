@@ -36,17 +36,12 @@ exports.handler = async (event, context) => {
         });
 
         const userAgent = await firestore.collection('visitors').doc(data).get();
-
-        const myHeaders = new Headers();
-        myHeaders.append("Origin", "https://ip-api.com");
-
         const requestOptions = {
             method: "GET",
-            headers: myHeaders,
             redirect: "follow"
         };
 
-        const res = await fetch("https://demo.ip-api.com/json/?fields=66842623&lang=en", requestOptions)
+        const res = await fetch(`http://ip-api.com/json/${data}`, requestOptions)
         const xml = await res.json();
         const parser = UAParser(
             {
