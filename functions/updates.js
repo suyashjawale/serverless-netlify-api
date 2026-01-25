@@ -1,5 +1,4 @@
 const admin = require('firebase-admin');
-const FieldValue = admin.firestore.FieldValue;
 
 const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -44,12 +43,11 @@ exports.handler = async (event) => {
         await firestore.collection('visitors').doc(clientIp).set({
             'IP': clientIp,
             'headers': {
-                'user-agent' : event.headers['user-agent'],
+                'user-agent': event.headers['user-agent'],
                 ...JSON.parse(event.body)
-            }, visits: FieldValue.arrayUnion({
-                'visit-time': new Date().toISOString()
-            })
-        }, { merge: true });
+            },
+            'visit-time': new Date().toISOString()
+        });
 
         const message = {
             chat_id: process.env.CHAT_ID,
@@ -72,7 +70,7 @@ exports.handler = async (event) => {
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify({ok:"ok"})
+            body: JSON.stringify({ ok: "ok" })
         };
 
     } catch (error) {
