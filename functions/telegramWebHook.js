@@ -36,20 +36,18 @@ exports.handler = async (event, context) => {
         });
 
         const userAgent = await firestore.collection('visitors').doc(data).get();
-        const myHeaders = new Headers();
-        myHeaders.append("content-type", "application/x-www-form-urlencoded; charset=UTF-8");
 
-        const raw = `ip=${data}&source=ipapico&ipv=4`;
+        const myHeaders = new Headers();
+        myHeaders.append("Origin", "https://ip-api.com");
 
         const requestOptions = {
-            method: "POST",
+            method: "GET",
             headers: myHeaders,
-            body: raw,
             redirect: "follow"
         };
 
-        const res = await fetch("https://www.iplocation.net/get-ipdata", requestOptions)
-        const xml = (await res.json()).res.data;
+        const res = await fetch("https://demo.ip-api.com/json/?fields=66842623&lang=en", requestOptions)
+        const xml = await res.json();
         const parser = UAParser(
             {
                 'user-agent': userAgent.data().headers['user-agent'],
@@ -67,8 +65,8 @@ exports.handler = async (event, context) => {
         message += `\n${parser.os.name} ${parser.os.version} ${parser.cpu.architecture}`;
         message += `\n\n<b>Browser</b>\n${parser.browser.name} <code>${parser.browser.version}</code> <code>${userAgent.data().headers['sec-ch-ua-full-version-list']}</code>\n\n__________________\n\n`;
 
-        message += `<b>Location</b>\n<a href="https://www.google.com/maps/search/?api=1&query=${xml.latitude},${xml.longitude}">${xml.city}, ${xml.district}, ${xml.state_prov}, ${xml.country_name}, ${xml.continent_name}</a>`;
-        message += `\n\n<b>ISP</b>\n${xml.connection_type} - ${xml.isp}\n${xml.organization}`;
+        message += `<b>Location</b>\n<a href="https://www.google.com/maps/search/?api=1&query=${xml.lat},${xml.lon}">${xml.city}, ${xml.regionName}, ${xml.country}, ${xml.continent}</a>`;
+        message += `\n\n<b>ISP</b>\n${xml.isp} - ${xml.isp}\n${xml.org}`;
 
         await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
             method: "POST",
