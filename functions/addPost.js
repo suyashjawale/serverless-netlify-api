@@ -35,7 +35,7 @@ exports.handler = async (event) => {
     try {
         const body = JSON.parse(event.body || '{}');
 
-        const { location, isCollection, imageUrl, caption, identifier, title, postBody, timestamp, password } = body;
+        const { location, isCollection, imageUrl, caption, identifier, title, postBody, timestamp, password, imageExt } = body;
 
         // Validate input
         if (!password || password.length > 20) {
@@ -66,7 +66,8 @@ exports.handler = async (event) => {
                 identifier : identifier,
                 title:title,
                 postBody : postBody,
-                timestamp: timestamp
+                timestamp: timestamp,
+                imageExt : imageExt
             }
         );
 
