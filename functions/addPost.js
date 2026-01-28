@@ -35,7 +35,7 @@ exports.handler = async (event) => {
     try {
         const body = JSON.parse(event.body || '{}');
 
-        const { location, isCollection, imageUrl, caption, identifier, title, postBody, timestamp, password, imageExt } = body;
+        const { location, isCollection, imageUrl, caption, identifier, title, postBody, timestamp, password, imageExt, width, height } = body;
 
         // Validate input
         if (!password || password.length > 20) {
@@ -58,16 +58,18 @@ exports.handler = async (event) => {
         // Fetch document
         await firestore.collection('posts').doc(identifier).set(
             {
-                identifier : identifier,
-                location : location,
-                isCollection:isCollection,
-                imageUrl : imageUrl,
-                caption:caption,
-                identifier : identifier,
-                title:title,
-                postBody : postBody,
+                identifier: identifier,
+                location: location,
+                isCollection: isCollection,
+                imageUrl: imageUrl,
+                caption: caption,
+                identifier: identifier,
+                title: title,
+                postBody: postBody,
                 timestamp: timestamp,
-                imageExt : imageExt
+                imageExt: imageExt,
+                width: width,
+                height: height
             }
         );
 
