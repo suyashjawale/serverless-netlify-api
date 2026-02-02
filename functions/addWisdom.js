@@ -35,7 +35,7 @@ exports.handler = async (event) => {
     try {
         const body = JSON.parse(event.body || '{}');
 
-        const { link, imageurl, title, description, freediumlink, height, width, identifier, password } = body;
+        const { ogLink, freediumLink, zipLink, zipExtn, imageExtn, imageurl, title, description, height, width, identifier, password } = body;
 
         // Validate input
         if (!password || password.length > 20) {
@@ -58,11 +58,14 @@ exports.handler = async (event) => {
         // Fetch document
         await firestore.collection('wisdom').doc(identifier).set(
             {
-                link: link,
+                ogLink: ogLink,
                 imageurl: imageurl,
                 title: title,
                 description: description,
-                freediumlink: freediumlink,
+                freediumlink: freediumLink,
+                zipLink: zipLink,
+                zipExtn: zipExtn,
+                imageExtn: imageExtn,
                 height: height,
                 width: width,
                 identifier: identifier,
@@ -73,7 +76,7 @@ exports.handler = async (event) => {
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify({ "message": 'Image Uploaded' }),
+            body: JSON.stringify({ "message": 'Wisdom Uploaded' }),
         };
     } catch (error) {
         return {
