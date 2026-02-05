@@ -16,6 +16,9 @@ if (!admin.apps.length) {
 const firestore = admin.firestore();
 
 exports.handler = async (event, context) => {
+    if (event.httpMethod === 'OPTIONS') {
+        return { statusCode: 200, headers };
+    }
 
     // Add this check after the method check
     if (event.headers['x-site-identity'] !== 'portfolio-admin-v1') {
