@@ -1,8 +1,8 @@
 const admin = require('firebase-admin');
 
 const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Origin': 'https://suyashjawale.github.io',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Site-Identity',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
@@ -33,6 +33,11 @@ exports.handler = async (event) => {
         };
     }
 
+    // Add this check after the method check
+    if (event.headers['x-site-identity'] !== 'portfolio-admin-v1') {
+        return { statusCode: 403, headers, body: JSON.stringify({ error: 'Identity mismatch' }) };
+    }
+
     try {
         const body = JSON.parse(event.body || '{}');
         const { customName, password, rank } = body;
@@ -55,7 +60,7 @@ exports.handler = async (event) => {
             };
         }
 
-        await firestore.collection('songs').doc(customName).update({rank: rank});
+        await firestore.collection('songs').doc(customName).update({ rank: rank });
 
         return {
             statusCode: 200,

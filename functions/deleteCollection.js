@@ -1,10 +1,11 @@
 const admin = require('firebase-admin');
 
 const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Origin': 'https://suyashjawale.github.io',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Site-Identity',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
+
 
 // Initialize Firebase only once
 if (!admin.apps.length) {
@@ -32,6 +33,12 @@ exports.handler = async (event) => {
             body: JSON.stringify({ error: 'Method not allowed' }),
         };
     }
+
+    // Add this check after the method check
+    if (event.headers['x-site-identity'] !== 'portfolio-admin-v1') {
+        return { statusCode: 403, headers, body: JSON.stringify({ error: 'Identity mismatch' }) };
+    }
+
 
     try {
         const body = JSON.parse(event.body || '{}');

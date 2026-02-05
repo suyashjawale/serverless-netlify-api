@@ -1,7 +1,7 @@
 const admin = require('firebase-admin');
 const headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type",
+    'Access-Control-Allow-Origin': 'https://suyashjawale.github.io',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Site-Identity',
     "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
 };
 // Initialize Firebase Admin SDK only once
@@ -15,6 +15,10 @@ if (!admin.apps.length) {
 const firestore = admin.firestore();
 
 exports.handler = async (event, context) => {
+    // Add this check after the method check
+    if (event.headers['x-site-identity'] !== 'portfolio-admin-v1') {
+        return { statusCode: 403, headers, body: JSON.stringify({ error: 'Identity mismatch' }) };
+    }
     try {
 
         const snapshot = await firestore.collection('wisdom').get();
