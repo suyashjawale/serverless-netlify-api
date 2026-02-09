@@ -1,6 +1,6 @@
 const admin = require('firebase-admin');
 const headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': 'https://suyashjawale.github.io',
     'Access-Control-Allow-Headers': 'Content-Type, X-Site-Identity',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
