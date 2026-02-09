@@ -40,7 +40,7 @@ exports.handler = async (event) => {
     try {
         const body = JSON.parse(event.body || '{}');
 
-        const { ogLink, freediumLink, zipLink, zipExtn, imageExtn, imageurl, title, description, height, width, identifier, password, publishedDate } = body;
+        const { ogLink, freediumLink, zipLink, zipExtn, imageExtn, imageurl, title, description, height, width, identifier, password, publishedDate, uploadIndex } = body;
 
         // Validate input
         if (!password || password.length > 20) {
@@ -74,7 +74,8 @@ exports.handler = async (event) => {
                 imageExtn: imageExtn,
                 height: height,
                 width: width,
-                identifier: identifier
+                identifier: identifier,
+                uploadIndex : uploadIndex
             }
         );
 
