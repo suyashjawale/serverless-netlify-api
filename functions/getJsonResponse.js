@@ -9,7 +9,6 @@ exports.handler = async (event, context) => {
         return { statusCode: 200, headers };
     }
 
-    // Only allow POST
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
@@ -18,20 +17,37 @@ exports.handler = async (event, context) => {
         };
     }
 
-    // Add this check after the method check
     if (event.headers['x-site-identity'] !== 'portfolio-admin-v1') {
         return { statusCode: 403, headers, body: JSON.stringify({ error: 'Identity mismatch' }) };
     }
+
     try {
         const body = JSON.parse(event.body || '{}');
         const { url } = body;
 
-        const res = await fetch(url);
+        const res = await fetch(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (compatible; portfolio-bot/1.0)'
+            }
+        });
+
+        // Check Reddit actually returned JSON, not an HTML error page
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+            const text = await res.text();
+            return {
+                statusCode: 502,
+                headers,
+                body: JSON.stringify({ error: `Reddit returned non-JSON: ${res.status}`, preview: text.slice(0, 200) }),
+            };
+        }
+
         const jsonData = await res.json();
+
         return {
             statusCode: 200,
             headers,
-            body: jsonData,
+            body: JSON.stringify(jsonData), // ← was missing JSON.stringify
         };
 
     } catch (error) {
